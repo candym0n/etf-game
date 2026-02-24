@@ -1,0 +1,64 @@
+{
+    "stocks": [
+        {
+            "ticker": "AAPL",
+            "name": "Apple",
+            "logo": "images/stocks/apple.svg",
+            "field": "Info Tech"
+        },
+        {
+            "ticker": "AMZN",
+            "name": "Amazon.com",
+            "logo": "images/stocks/amazon.svg",
+            "field": "Consumer"
+        },
+        {
+            "ticker": "GOOGL",
+            "name": "Alphabet (Google)",
+            "logo": "images/stocks/google.png",
+            "field": "Communications"
+        },
+        {
+            "ticker": "MSFT",
+            "name": "Microsoft",
+            "logo": "images/stocks/microsoft.png",
+            "field": "Info Tech"
+        },
+        {
+            "ticker": "NVDA",
+            "name": "NVIDIA",
+            "logo": "images/stocks/nvidia.svg",
+            "field": "Info Tech"
+        },
+        {
+            "ticker": "TSM",
+            "name": "Taiwan Semiconductor",
+            "logo": "images/stocks/tsmc.png",
+            "field": "Info Tech"
+        },
+        {
+            "ticker": "BAC",
+            "name": "Bank of America",
+            "logo": "images/stocks/bac.png",
+            "field": "Financials"
+        },
+        {
+            "ticker": "JPM",
+            "name": "JPMorgan Chase",
+            "logo": "images/stocks/jpm.png",
+            "field": "Financials"
+        },
+        {
+            "ticker": "LEHM",
+            "name": "Lehman Brothers",
+            "logo": "images/stocks/lehman.png",
+            "field": "Financials"
+        },
+        {
+            "ticker": "WM",
+            "name": "Washington Mutual",
+            "logo": "images/stocks/wm.png",
+            "field": "Financials"
+        }
+    ]
+}
