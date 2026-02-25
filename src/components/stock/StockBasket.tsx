@@ -15,7 +15,6 @@ const StockBasket = () => {
                 borderColor: "grey.400",
                 borderRadius: 2,
                 display: "flex",
-                // let content start at the top
                 alignItems: "flex-start",
                 justifyContent: "flex-start",
                 color: "grey.500",
@@ -36,7 +35,7 @@ const StockBasket = () => {
             >
                 {stocks.map((stock: Stock, index: number) => (
                     <StockCard
-                        key={stock.ticker ?? index}
+                        key={stock.ticker + '-' + index}
                         ticker={stock.ticker}
                         isAdd={false}
                         onAction={() => removeStock(index)}
