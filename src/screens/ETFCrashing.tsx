@@ -7,6 +7,8 @@ import {
 import Header from "../components/Header";
 import GraphPreview from "../components/GraphPreview";
 
+import investments from "../assets/data/investments.json";
+
 const ETFCrashing = () => {
     return (
         <Box
@@ -32,7 +34,7 @@ const ETFCrashing = () => {
                     sx={{ alignItems: "stretch" }}
                 >
                     <Grid size={{ xs: 12, md: 12 }}>
-                        <GraphPreview stocks={["AAPL", "BAC", "MSFT", ""]}/>
+                        <GraphPreview showETF equityETFs={["SP500"]} stocks={[...investments.stocks.map(a=>a.ticker)]}/>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                     </Grid>
