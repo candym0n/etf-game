@@ -30,7 +30,7 @@ const etfTags = [
     "Awesome",
 ];
 
-const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ }) => {
+const CelebrationScreen = () => {
     const [width, height] = [
         typeof window !== "undefined" ? window.innerWidth : 1920,
         typeof window !== "undefined" ? window.innerHeight : 1080,
