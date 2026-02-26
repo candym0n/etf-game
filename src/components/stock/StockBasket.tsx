@@ -21,12 +21,12 @@ const StockBasket = () => {
                 bgcolor: "grey.50",
                 boxSizing: "border-box",
                 p: 2,
-                overflowY: "auto",   // <─ key line: vertical scroll
-                overflowX: "hidden", // optional
+                overflowY: "auto",
+                overflowX: "hidden",
             }}
         >
             <Stack
-                direction="row"        // or "column"
+                direction="row"
                 spacing={2}
                 flexWrap="wrap"
                 justifyContent="center"

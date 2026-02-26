@@ -23,20 +23,19 @@ type ResultState = {
 
 const SUCCESS_MESSAGE: ResultState = {
     title: "Nice diversification 🎉",
-    body: "Your ETF was well diversified, so it was less prone to risk.",
+    body: "Your portfolio was well diversified, so its value continued to grow steadily.",
     tone: "success"
 };
 
 const FAILURE_MESSAGE: ResultState = {
-    title: "Your ETF took a hit 📉",
-    body: "You concentrated too much in bank stocks, so your ETF was very volatile.",
+    title: "Your portfolio took a hit 📉",
+    body: "You concentrated too much in equity ETFs, so your portfolio was facing some serious risk.",
     tone: "error"
 };
 
-const ETFCrashing = () => {
+const PortfolioCrashing = () => {
     const crashed = useStateStore(state => state.simulationPlayed);
     const acknowledgeCrash = useStateStore(state => state.playSimulation);
-    const resetSimulation = useStateStore(state => state.resetSimulation);
     const [result, setResult] = useState<ResultState | null>(null);
     const navigate = useNavigate();
 
@@ -67,7 +66,7 @@ const ETFCrashing = () => {
                 }}
                 disableGutters
             >
-                <Header title="Phase Two: Test your ETF against the market!" />
+                <Header title="Phase Four: Test your portfolio against the market!" />
 
                 <Grid
                     container
@@ -77,9 +76,9 @@ const ETFCrashing = () => {
                     <Grid size={{ xs: 12, md: 12 }}>
                         <GraphPreview
                             onCrash={onCrash}
-                            showETF
-                            equityETFs={["SPX"]}
-                            stocks={investments.stocks.map(a => a.ticker)}
+                            showPortfolio
+                            equityETFs={investments.equity_etfs.map(a => a.ticker)}
+                            bondETFs={investments.bond_etfs.map(a => a.ticker)}
                         />
                     </Grid>
 
@@ -121,7 +120,7 @@ const ETFCrashing = () => {
                                 <Button
                                     variant="contained"
                                     color={isSuccess ? "success" : "error"}
-                                    onClick={() => navigate(isSuccess ? (resetSimulation(),"/phase-three") : "/phase-one")}
+                                    onClick={() => navigate(isSuccess ? "/finish" : "/phase-three")}
                                 >
                                     { isSuccess ? "Continue" : "Try Again" }
                                 </Button>
@@ -134,4 +133,4 @@ const ETFCrashing = () => {
     );
 };
 
-export default ETFCrashing;
+export default PortfolioCrashing;

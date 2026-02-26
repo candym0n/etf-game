@@ -7,7 +7,7 @@ export type ETFState = {
     removeStock: (index: number) => void
 }
 
-const useETFStore = create<ETFState>()((set, get) => ({
+const useETFStore = create<ETFState>()(set => ({
     stocks: [],
     addStock: (stock: Stock) => {
         let result: number = -1;

@@ -15,12 +15,15 @@ import {
 } from "@mui/material";
 import market from "../assets/data/market.json";
 import { useETFStore } from "../store/etfStore";
+import { usePortfolioStore } from "../store/portfolioStore";
 
 interface GraphPreviewProps {
     stocks?: string[];
     equityETFs?: string[];
     bondETFs?: string[];
+    showPortfolio?: boolean; // Show your portfolio as well
     showETF?: boolean; // Show your custom ETF as well
+    onCrash: () => void; // Called when a time period is run
 }
 
 type TimePeriod = "gfc" | "covid";
@@ -47,8 +50,8 @@ const UI_TIME_PERIODS: { id: number; label: string; period: TimePeriod }[] = [
 const ANIMATION_DURATION = 10000;
 const ANIMATION_FPS = 30;
 
-// Special styling for your ETF
-const ETFSPECIAL_COLOR = "#000000";
+// Special styling for your ETF / portfolio
+const SPECIAL_COLOR = "#000000";
 
 // Long color palette with many distinct colors
 const PALETTE: string[] = [
@@ -84,10 +87,10 @@ const applySeriesColors = (series: LineSeries[]): LineSeries[] => {
     let paletteIndex = 0;
 
     return series.map((s) => {
-        if (s.id === "custom-etf") {
+        if (s.id === "custom-etf" || s.id === "portfolio") {
             return {
                 ...s,
-                color: ETFSPECIAL_COLOR,
+                color: SPECIAL_COLOR,
                 highlightScope: { highlighted: "series", faded: "global" },
             };
         }
@@ -104,9 +107,11 @@ const applySeriesColors = (series: LineSeries[]): LineSeries[] => {
 
 const GraphPreview: React.FC<GraphPreviewProps> = ({
     showETF = false,
+    showPortfolio = false,
     stocks = [],
     equityETFs = [],
     bondETFs = [],
+    onCrash
 }) => {
     const theme = useTheme();
     const [selectedPeriodId, setSelectedPeriodId] = useState<number | "">("");
@@ -115,6 +120,8 @@ const GraphPreview: React.FC<GraphPreviewProps> = ({
     const [isAnimating, setIsAnimating] = useState(false);
 
     const etfStocks = useETFStore((state) => state.stocks);
+    const portfolioEquityETFs = usePortfolioStore(state => state.equityETFs);
+    const portfolioBondETFs = usePortfolioStore(state => state.bondETFs);
 
     const { dates, stockSeriesFull } = useMemo(() => {
         if (!activePeriod) {
@@ -161,6 +168,7 @@ const GraphPreview: React.FC<GraphPreviewProps> = ({
             }));
 
         const hasEtfStocks = etfStocks && etfStocks.length > 0;
+        const hasPortfolioETFs = (portfolioEquityETFs && portfolioEquityETFs.length) || (portfolioBondETFs && portfolioBondETFs.length);
 
         const customETFData: LineSeries | null =
             showETF && hasEtfStocks
@@ -179,11 +187,31 @@ const GraphPreview: React.FC<GraphPreviewProps> = ({
                 }
                 : null;
 
+        const customPortfolioData: LineSeries | null =
+            showPortfolio && hasPortfolioETFs
+                ? {
+                    id: "portfolio",
+                    label: "Your Portfolio",
+                    data: [
+                        ...portfolioEquityETFs.map(etf => periodData.equity_etfs[etf.ticker]),
+                        ...portfolioBondETFs.map(etf => periodData.bond_etfs[etf.ticker])
+                    ]
+                        .reduce(
+                            (acc, obj) => acc.map((v: number, i: number) => v + obj[i]),
+                            new Array(periodData.dates.length).fill(0),
+                        )
+                        .map((a) => a / (portfolioBondETFs.length + portfolioEquityETFs.length))
+                        .filter((_, i) => i % DATA_SCALE_DOWN_FACTOR === 0),
+                    showMark: false
+                }
+                : null;
+
         const baseSeries: LineSeries[] = [
             ...stockData,
             ...equityETFData,
             ...bondETFData,
             ...(customETFData ? [customETFData] : []),
+            ...(customPortfolioData ? [customPortfolioData] : [])
         ];
 
         const coloredSeries = applySeriesColors(baseSeries);
@@ -219,10 +247,11 @@ const GraphPreview: React.FC<GraphPreviewProps> = ({
         const intervalId = window.setInterval(() => {
             currentPoints += pointsPerStep;
 
-            if (currentPoints >= totalPoints) {
+            if (currentPoints >= totalPoints) { // We're done with the time period!
                 currentPoints = totalPoints;
                 setVisiblePoints(currentPoints);
                 setIsAnimating(false);
+                onCrash();
                 window.clearInterval(intervalId);
             } else {
                 setVisiblePoints(currentPoints);
@@ -265,11 +294,11 @@ const GraphPreview: React.FC<GraphPreviewProps> = ({
             }}
         >
             <Typography variant="h6" sx={{ mb: 2 }}>
-                Market preview
+                Market Simulation
             </Typography>
 
             <LineChart
-                height={400}
+                height={280}
                 xAxis={
                     dates.length
                         ? [

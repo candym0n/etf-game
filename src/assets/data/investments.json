@@ -60,5 +60,44 @@
             "logo": "images/stocks/wm.png",
             "field": "Financials"
         }
+    ],
+    "equity_etfs": [
+        {
+            "ticker": "SPX",
+            "name": "S&P 500",
+            "description": "Tracks 500 large U.S. companies across all sectors, with heavy weights in Apple, Microsoft, NVIDIA, Amazon, Alphabet, Meta, Berkshire Hathaway, and JPMorgan Chase. <a target='_blank' href=\"https://www.spglobal.com/spdji/en/indices/equity/sp-500/\">Learn More</a>"
+        },
+        {
+            "ticker": "VGT",
+            "name": "Vanguard Tech",
+            "description": "Large-cap U.S. tech stocks, concentrated in NVIDIA, Apple, Microsoft, Broadcom, and Advanced Micro Devices, plus other software and semiconductor names. <a target='_blank' href=\"https://investor.vanguard.com/investment-products/etfs/profile/vgt\">Learn More</a>"
+        },
+        {
+            "ticker": "XLE",
+            "name": "Energy Sector",
+            "description": "U.S. energy majors focused on oil and gas, led by Exxon Mobil, Chevron, ConocoPhillips, Williams Companies, SLB, Phillips 66, Valero, Marathon Petroleum, and Baker Hughes. <a target='_blank' href=\"https://www.ssga.com/us/en/individual/etfs/funds/the-energy-select-sector-spdr-fund-xle\">Learn More</a>"
+        },
+        {
+            "ticker": "VDE",
+            "name": "Vanguard Energy",
+            "description": "Broad U.S. energy basket including Exxon Mobil, Chevron, ConocoPhillips, Williams Companies, Marathon Petroleum, EOG Resources, Phillips 66, Valero, Kinder Morgan, and Baker Hughes. <a target='_blank' href=\"https://investor.vanguard.com/investment-products/etfs/profile/vde\">Learn More</a>"
+        },
+        {
+            "ticker": "XOP",
+            "name": "Oil & Gas E&P",
+            "description": "Equal-weighted U.S. oil and gas exploration and production names such as Texas Pacific Land, Venture Global, Exxon Mobil, California Resources, Occidental, Chevron, Ovintiv, Permian Resources, Magnolia Oil & Gas, and Coterra Energy. <a target='_blank' href=\"https://www.ssga.com/us/en/individual/etfs/funds/spdr-sp-oil-gas-exploration-production-etf-xop\">Learn More</a>"
+        }
+    ],
+    "bond_etfs": [
+        {
+            "ticker": "TLT",
+            "name": "iShares 20+ Treasuries",
+            "description": "Portfolio of long-term U.S. Treasury bonds, including issues like U.S. Treasury 2.0% 2051, 1.875% 2051, 4.125% 2053, 4.25% 2054, and 3.625% 2053, with maturities beyond 20 years. <a target='_blank' href=\"https://www.ishares.com/us/products/239454/ishares-20-year-treasury-bond-etf\">Learn More</a>"
+        },
+        {
+            "ticker": "EDV",
+            "name": "Vanguard Extended Treasuries",
+            "description": "Long-duration U.S. Treasury STRIPS created from Treasury bonds with maturities typically 20-30+ years, giving very high sensitivity to long-term U.S. government bond yields. <a target='_blank' href=\"https://investor.vanguard.com/investment-products/etfs/profile/edv\">Learn More</a>"
+        }
     ]
 }

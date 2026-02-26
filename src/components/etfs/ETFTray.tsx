@@ -1,11 +1,18 @@
-import StockCard, { type Stock } from "./StockCard";
-import { useETFStore } from "../../store/etfStore";
+import ETFCard, { type ETF, type ETFType } from "./ETFCard";
+import { usePortfolioStore } from "../../store/portfolioStore";
 import { Box, Stack, Typography } from "@mui/material";
 import investments from "../../assets/data/investments.json";
+import type React from "react";
 
-const StockTray = () => {
-    const stocks: Stock[] = investments.stocks as Stock[];
-    const addStock = useETFStore((state) => state.addStock);
+interface ETFTrayProps {
+    type: ETFType
+}
+
+const ETFTray: React.FC<ETFTrayProps> = ({ type }) => {
+    const addEquityETF = usePortfolioStore(state => state.addEquityETF);
+    const addBondETF = usePortfolioStore(state => state.addBondETF);
+
+    const etfs = investments[type] as ETF[];
 
     return (
         <Box
@@ -24,7 +31,7 @@ const StockTray = () => {
             }}
         >
             <Typography variant="subtitle2" sx={{ mb: 1, color: "text.secondary" }}>
-                Available Stocks
+                Available 
             </Typography>
 
             <Box
@@ -38,12 +45,13 @@ const StockTray = () => {
                     spacing={1.5}
                     sx={{ width: "100%" }}
                 >
-                    {stocks.map((stock: Stock) => (
-                        <StockCard
-                            key={stock.ticker}
-                            ticker={stock.ticker}
+                    {etfs.map((etf: ETF) => (
+                        <ETFCard
+                            key={etf.ticker}
+                            ticker={etf.ticker}
                             isAdd={true}
-                            onAction={() => addStock(stock)}
+                            type={type}
+                            onAction={() => type === "equity_etfs" ? addEquityETF(etf) : addBondETF(etf)}
                         />
                     ))}
                 </Stack>
@@ -52,4 +60,4 @@ const StockTray = () => {
     );
 };
 
-export default StockTray;
+export default ETFTray;

@@ -8,48 +8,37 @@ import {
 } from "@mui/material";
 import Header from "../components/Header";
 import PiePreview, { type AllocationData } from "../components/PiePreview";
-import StockBasket from "../components/stock/StockBasket";
-import StockTray from "../components/stock/StockTray";
-import { type Stock } from "../components/stock/StockCard";
-import { useETFStore } from "../store/etfStore";
+import { usePortfolioStore } from "../store/portfolioStore";
 import { useNavigate } from "react-router-dom";
 import { useAppDialog } from "../providers/DialogProvider";
+import ETFTray from "../components/etfs/ETFTray";
+import investments from "../assets/data/investments.json";
+import ETFBasket from "../components/etfs/ETFBasket";
 import { useStateStore } from "../store/stateStore";
 
-const ETFBuilder: React.FC = () => {
-    const stocks = useETFStore(state => state.stocks);
+const PortfolioBuilder: React.FC = () => {
     const [allocations, setAllocations] = useState<AllocationData[]>([]);
+    const equityETFs = usePortfolioStore(state => state.equityETFs);
+    const bondETFs = usePortfolioStore(state => state.bondETFs);
+    const crashed = useStateStore(state => state.simulationPlayed);
     const navigate = useNavigate();
     const { showDialog } = useAppDialog();
-    const crashed = useStateStore(state => state.simulationPlayed);
 
     useEffect(() => {
-        // Show some instructions / welcome
         crashed || showDialog([
-            "<b>Exchanged Traded Funds (ETFs)</b> are like baskets of securities: stocks, bonds, bundled into a single investment.",
-            "ETFs trade like stocks but hold bundles of assets, usually with lower fees than mutual funds.",
-            "They come in many types, but you'll start with <b>equity ETFs</b> that track market indexes.",
-            "Select stocks from the list on the left to build your ETF basket."
-        ], "Build your ETF");
+            "In real life, you don't build the ETF itself. Companies create the ETFs for you. What you control is how you use existing ETFs to build your own portfolio.",
+            "Another type of ETF is called <b>bond ETFs</b>, which hold bonds, such as government, corporate, or municipal bonds. They also trade on stock exchange just like a stock.",
+            "Before investing in an ETF, it's important to understand what's inside it. Click on the information circles to learn more about each ETF.",
+            "Select ETFs from the lists on the left to build your portfolio, and click \"Next\" when you're ready to test it against the market."
+        ], "Build your portfolio");
     }, []);
 
     useEffect(() => {
-        if (!stocks.length)
-            return void setAllocations([{
-                label: "Nothing",
-                value: 1
-            }]);
-
-        const countByField = stocks.reduce<Record<Stock['field'], number>>((accum, curr) => {
-            accum[curr.field] = (accum[curr.field] || 0) + 1;
-            return accum;
-        }, {});
-
-        setAllocations(Object.entries(countByField).map(([field, count]) => ({
-            label: field,
-            value: count
-        })));
-    }, [stocks]);
+        setAllocations([
+            { label: "Bond ETFs", value: bondETFs.length },
+            { label: "Equity ETFs", value: equityETFs.length }
+        ]);
+    }, [bondETFs, equityETFs]);
 
     return (
         <Box
@@ -67,24 +56,30 @@ const ETFBuilder: React.FC = () => {
                 }}
                 disableGutters
             >
-                <Header title="Phase One: Build an Equity ETF" />
+                <Header title="Phase Three: Build Your ETF Portfolio" />
 
                 <Grid
                     container
                     spacing={3}
                     sx={{ alignItems: "stretch" }}
                 >
+                    <Grid size={{ xs: 12, md: 2 }}>
+                        <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+                            Equity ETFs
+                        </Typography>
+                        <ETFTray type="equity_etfs" />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 2 }}>
+                        <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+                            Bond ETFs
+                        </Typography>
+                        <ETFTray type="bond_etfs" />
+                    </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
                         <Typography variant="h6" align="center" sx={{ mb: 2 }}>
-                            Stocks
+                            Your Portfolio
                         </Typography>
-                        <StockTray />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <Typography variant="h6" align="center" sx={{ mb: 2 }}>
-                            Your ETF
-                        </Typography>
-                        <StockBasket />
+                        <ETFBasket />
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 5 }}>
@@ -97,7 +92,7 @@ const ETFBuilder: React.FC = () => {
                                 variant="contained"
                                 color="primary"
                                 size="large"
-                                onClick={() => navigate("/phase-two")}
+                                onClick={() => navigate("/phase-four")}
                             >
                                 Next
                             </Button>
@@ -109,4 +104,4 @@ const ETFBuilder: React.FC = () => {
     );
 };
 
-export default ETFBuilder;
+export default PortfolioBuilder;
