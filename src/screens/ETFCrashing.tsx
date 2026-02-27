@@ -9,11 +9,14 @@ import {
 
 import Header from "../components/Header";
 import GraphPreview from "../components/GraphPreview";
-
+import DataAnalysis from "../components/DataAnalysis";
 import investments from "../assets/data/investments.json";
 import { useStateStore } from "../store/stateStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useETFStore } from "../store/etfStore";
+import { type Stock } from "../components/stock/StockCard";
+import { type AllocationData } from "../components/PiePreview";
 
 type ResultState = {
     title: string;
@@ -34,10 +37,12 @@ const FAILURE_MESSAGE: ResultState = {
 };
 
 const ETFCrashing = () => {
+    const stocks = useETFStore(state => state.stocks);
     const crashed = useStateStore(state => state.simulationPlayed);
     const acknowledgeCrash = useStateStore(state => state.playSimulation);
     const resetSimulation = useStateStore(state => state.resetSimulation);
     const [result, setResult] = useState<ResultState | null>(null);
+    const [allocations, setAllocations] = useState<AllocationData[]>([]);
     const navigate = useNavigate();
 
     const onCrash = () => {
@@ -50,6 +55,24 @@ const ETFCrashing = () => {
     };
 
     const isSuccess = result?.tone === "success";
+
+    useEffect(() => {
+        if (!stocks.length)
+            return void setAllocations([{
+                label: "Nothing",
+                value: 1
+            }]);
+
+        const countByField = stocks.reduce<Record<Stock['field'], number>>((accum, curr) => {
+            accum[curr.field] = (accum[curr.field] || 0) + 1;
+            return accum;
+        }, {});
+
+        setAllocations(Object.entries(countByField).map(([field, count]) => ({
+            label: field,
+            value: count
+        })));
+    }, [stocks]);
 
     return (
         <Box
@@ -121,12 +144,15 @@ const ETFCrashing = () => {
                                 <Button
                                     variant="contained"
                                     color={isSuccess ? "success" : "error"}
-                                    onClick={() => navigate(isSuccess ? (resetSimulation(),"/phase-three") : "/phase-one")}
+                                    onClick={() => navigate(isSuccess ? (resetSimulation(), "/phase-three") : "/phase-one")}
                                 >
-                                    { isSuccess ? "Continue" : "Try Again" }
+                                    {isSuccess ? "Continue" : "Try Again"}
                                 </Button>
                             </Paper>
                         )}
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        {result && <DataAnalysis data={allocations} />}
                     </Grid>
                 </Grid>
             </Container>

@@ -66,7 +66,7 @@ const CelebrationScreen = () => {
                 height={height}
                 numberOfPieces={550}
                 gravity={0.3}
-                recycle={true}
+                recycle={false}
                 colors={["#00e676", "#00b0ff", "#ffea00", "#ff4081", "#7c4dff"]}
             />
 

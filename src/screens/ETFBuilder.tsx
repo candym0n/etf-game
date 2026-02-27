@@ -33,6 +33,7 @@ const ETFBuilder: React.FC = () => {
         ], "Build your ETF");
     }, []);
 
+    // TODO: Wrap in helper function? Also used in the other 3 phases
     useEffect(() => {
         if (!stocks.length)
             return void setAllocations([{
