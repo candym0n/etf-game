@@ -152,7 +152,7 @@ const ETFCrashing = () => {
                         )}
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                        {result && <DataAnalysis data={allocations} />}
+                        {result && <DataAnalysis stocks={stocks} allocData={allocations} period={"gfc"} /> /* Yes, I know. Sorry. */}
                     </Grid>
                 </Grid>
             </Container>

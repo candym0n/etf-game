@@ -1,41 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { Paper, Typography, Box } from "@mui/material";
+import market from "../assets/data/market.json";
 import { type AllocationData } from "./PiePreview";
+import { type Stock } from "./stock/StockCard";
+import { type ETF } from "./etfs/ETFCard";
 
 interface DataAnalysisProps {
-    data: AllocationData[];
+    allocData: AllocationData[];
+    stocks?: Stock[];
+    equityETFs?: ETF[];
+    bondETFs?: ETF[];
+    period: "gfc" | "covid";
 }
 
 interface AnalysisData {
     maxDiversification: {
         field: string,
         percent: number
-    }
+    },
+    HHIndex: number,
+    ROI: number
 }
 
-const DataAnalysis: React.FC<DataAnalysisProps> = ({ data }) => {
+const DataAnalysis: React.FC<DataAnalysisProps> = ({ allocData, stocks = [], equityETFs = [], bondETFs = [], period }) => {
     const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
     useEffect(() => {
         let maxDiversification: AnalysisData["maxDiversification"];
 
-        const maximumField = data.sort((
+        const maximumField = allocData.sort((
             prev: AllocationData,
             curr: AllocationData) =>
-                curr.value - prev.value
+            curr.value - prev.value
         )[0];
 
-        const totalElements = data.reduce((accum: number, curr: AllocationData) => accum + curr.value, 0);
+        const totalElements = allocData.reduce((accum: number, curr: AllocationData) => accum + curr.value, 0);
 
         maxDiversification = {
             field: maximumField.label,
             percent: maximumField.value / totalElements
         }
 
+        const lastDay = market[period].dates.length - 1;
+
+        let returnOnInvestment: AnalysisData["ROI"] = (
+            stocks.reduce((accum, curr) => accum + (market[period].stocks as Record<string, number[]>)[curr.ticker][lastDay], 0) +
+            equityETFs.reduce((accum, curr) => accum + (market[period].equity_etfs as Record<string, number[]>)[curr.ticker][lastDay], 0) +
+            bondETFs.reduce((accum, curr) => accum + (market[period].bond_etfs as Record<string, number[]>)[curr.ticker][lastDay], 0)
+        ) / (stocks.length + equityETFs.length + bondETFs.length) / 100 - 1;
+        let HHIndex: AnalysisData["HHIndex"] = allocData.reduce((accum, curr) => accum + curr.value * curr.value, 0) / (stocks.length + equityETFs.length + bondETFs.length) ** 2;
+
         setAnalysisData({
-            maxDiversification
+            maxDiversification,
+            ROI: returnOnInvestment,
+            HHIndex
         })
-    }, [data]);
+    }, [allocData]);
 
     return (
         <Paper
@@ -67,10 +87,16 @@ const DataAnalysis: React.FC<DataAnalysisProps> = ({ data }) => {
                     color: "black"
                 }}
             >
-                Maximum Field: { analysisData?.maxDiversification.field } by: 
+                <b>Dominant Field:</b> {analysisData?.maxDiversification.field} (
                 <Box component="span" sx={{
-                    color: analysisData?.maxDiversification.percent! >= 0.3 ? "red" : "blue",
-                }}>{Math.round(analysisData?.maxDiversification.percent! * 100)}%</Box>
+                    color: analysisData?.maxDiversification.percent! > 0.5 ? "red" : "green",
+                }}>{Math.round(analysisData?.maxDiversification.percent! * 100)}%</Box>)<br />
+                <b>Diversification:</b> <Box component="span" sx={{
+                    color: analysisData?.HHIndex! > 0.5 ? "red" : "green",
+                }}>{Math.round(100 - analysisData?.HHIndex! * 100)}%</Box><br />
+                <b>Return on Investment:</b> <Box component="span" sx={{
+                    color: analysisData?.ROI! <= 0 ? "red" : "green",
+                }}>{Math.round(analysisData?.ROI! * 100)}%</Box>
             </Typography>
         </Paper>
     )

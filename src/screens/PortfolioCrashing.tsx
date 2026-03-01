@@ -12,8 +12,13 @@ import GraphPreview from "../components/GraphPreview";
 
 import investments from "../assets/data/investments.json";
 import { useStateStore } from "../store/stateStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import DataAnalysis from "../components/DataAnalysis";
+import { usePortfolioStore } from "../store/portfolioStore";
+
+import { type AllocationData } from "../components/PiePreview";
 
 type ResultState = {
     title: string;
@@ -37,7 +42,17 @@ const PortfolioCrashing = () => {
     const crashed = useStateStore(state => state.simulationPlayed);
     const acknowledgeCrash = useStateStore(state => state.playSimulation);
     const [result, setResult] = useState<ResultState | null>(null);
+    const equityETFs = usePortfolioStore(state => state.equityETFs);
+    const bondETFs = usePortfolioStore(state => state.bondETFs);
+    const [allocations, setAllocations] = useState<AllocationData[]>([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+            setAllocations([
+                { label: "Bond ETFs", value: bondETFs.length },
+                { label: "Equity ETFs", value: equityETFs.length }
+            ]);
+        }, [bondETFs, equityETFs]);
 
     const onCrash = () => {
         if (crashed) {
@@ -122,10 +137,13 @@ const PortfolioCrashing = () => {
                                     color={isSuccess ? "success" : "error"}
                                     onClick={() => navigate(isSuccess ? "/finish" : "/phase-three")}
                                 >
-                                    { isSuccess ? "Continue" : "Try Again" }
+                                    {isSuccess ? "Continue" : "Try Again"}
                                 </Button>
                             </Paper>
                         )}
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        {result && <DataAnalysis equityETFs={equityETFs} bondETFs={bondETFs} allocData={allocations} period={"covid"} /> /* Yes, I know. Sorry. */}
                     </Grid>
                 </Grid>
             </Container>
